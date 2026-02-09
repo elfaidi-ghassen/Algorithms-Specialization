@@ -1,9 +1,26 @@
 # Algorithms Specialization
+## Review
 
 
 
 
-#### Randomized Selection
+
+
+## Prerequites
+- Writing Direct Proof, proof by contradiction, and by induction
+- Basics of Discrete Probability: Random Variables, Expectation, Independence
+  - more advanceed concepts are not needed
+- optional: proving array invariants (by induction)
+
+
+## Course 1
+
+#### Master Method
+all subproblem size must have the same size
+
+
+### Week 4
+#### Randomized Selection (RSelect Algorithm)
 
 - ith order statistic = ith smallest number in the input array
 - example: [10, 24, 52, 46, 60]
@@ -153,3 +170,83 @@ Running time of RSelect $\le 2n.4$
 Running time of RSelect is $O(n)$
 
 It's just amazing :)
+
+#### Deterministic Selection
+It's not in-place like RSelect, and it has larger constant factors, hence it's not RSelect is preferred in practice.
+But it's always linear time, unlike RSelect
+
+median of medians method
+
+DSelect is mind blowing, like.. really mind blowing.
+published in 1973 by Manuel Blum, Robert W. Floyd (behind the famous shortest path algorithm), Vaughan Pratt, Ron Rivest (behind the RSA), and Robert Tarjan. (4 of them were awarded with a Turing Award)
+
+I didn't write lots of notes, I was just sitting there mesmerised by what i was seeing.
+but at the end there was a Proof by Induction that catched my eyes, I didn't quite understand it, esp. since the Tim's style is very condenced, in fact I didn't immediately realize it was a Strong Induction.
+here is the proof but re-written, by the style I learned from Susanna Epp, which is sharp and beautiful.
+It's an interesting idea, this is an ad-hoc method to prove the complexity of any D&C algorithm. We will use it since the version of Master Method we have learned wouldn't work well here (only works if all recrusive call receive the same inupt size).
+It's a ... and guess method. we guessed it must be O(n) so we will try to prove it.
+
+---
+
+what is *true*:
+
+$T(1)=1$
+
+(*) $T(n) \le cn + T(\frac{n}{5}) +T(\frac{7}{10}n)$
+
+claim: 
+
+let $a = 10c$ (this constant was reverse engineered, when reached the point (\*\*) in the proof)
+
+$T(n) \le an$ for all $n \ge 1$
+
+proof:
+
+let $P(n)$ be the property $T(n) \le an$.
+
+Design Recipe for Strong induction.
+to prove P(n) is true:
+- Base case:
+  - we must show that P(a), p(a + 1), ... P(b) are true.
+    - useful sometimes, example:
+      - $a_1 = 1, a_2 = 3, a_k=a_{k-2} + 2a_{k-1}$ for $k\ge 3$
+      - you want to prove $a_n$ is odd for all n.
+- Inductive case:
+  - we must show that for all k >= b, if P(i) is true for all integers i from a to k, then P(k + 1) is true.
+
+
+- the idea of Strong induction is that we need to suppose more. if you look carefully at the inductive case, it's clear we need to use a direct proof, but we cannot do it if we only suppose P(k), its' not enough to prove P(k+1).
+  - Induction: prove $P(k) \to P(k+1)$ is true
+  - Strong induction: prove $P(i) \forall i \in \{a, ...,  k\} \to P(k+1)$
+
+- Base case:
+  - $T(1) = 1 \le a$ therefore $P(1)$ is true.
+- Inductive case:
+  - we must show that for all $k \ge 1$, if $P(i)$ is true for all integers $i$ from 1 to k, then $P(k+1)$ is true.
+  - Direct Proof:
+    - let k [particular but arbitrary chosen] integer $\ge 1$ and $P(i)$ is true for all every integer i between 1 and $k$
+    - [we must show that $P(k+1)$ is true]
+    - we have the following expression (*) which is true for all $n\ge1$, hence we can substite n with k + 1 (we can't do the same with $P(n)$, It's what we are trying to prove!)
+    - $T(k + 1) \le c(k + 1) + T(\frac{k + 1}{5}) +T(\frac{7}{10}(k + 1))$
+    - that's a mess, so let n = k + 1 
+    - $T(n) \le cn + T(\frac{n}{5}) +T(\frac{7}{10}n)$
+    - $T(n/5) = T(\frac{k + 1}{5})$ and $1 \le \frac{k + 1}{5} \le k$. Therefore, base on the inductive hypothesis, $P(i) = P(\frac{k + 1}{5})$ is true. So $T(n/5) \le a(n/5)$
+    - In the same way, $T(\frac{7}{10}(k + 1)) \le a(\frac{7}{10}n)$
+    - we substitute:
+    - $T(n) \le cn + a(n/5) + a(\frac{7}{10}n)$
+    - $T(n) \le n(c + a/5 + a(\frac{7}{10}))= n(c  + \frac{9}{10}a)$ (\*\*)
+    - now we only need to simplify it, by a clever choice of constant:$a=10c$
+    - $T(n) \le n(10c) = an$
+- Conclusion, $P(n)$ is true for all integers $n\ge 1$
+
+---
+
+
+#### Insights
+
+Randomized Algorithms are mind blowing.
+
+the approach we can use to find the runtime complexity of divide and conquer algorithms is using recurrences. 
+we cannot use that approach because we don't really know the size of the subarray, it's randomized! 
+
+
