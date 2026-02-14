@@ -3,17 +3,19 @@
 
 
 
-
-
-
 ## Prerequites
-- Writing Direct Proof, proof by contradiction, and by induction
-- Basics of Discrete Probability: Random Variables, Expectation, Independence
-  - more advanceed concepts are not needed
-- optional: proving array invariants (by induction)
+Some Discrete Math is essential for understand
+- Writing proof by contradiction and by induction
+- Basics of Counting Discrete Probability:
+  - Random Variables, Expectation, Independence
+  - Linearity of Expectation is one of the most important topics
+  - Pigeonhole principle basics
+  - Conditional Probability basics
 
 
 ## Course 1
+
+> "Perhaps the most important principle for the good algorithm designer is to refuse to be content." Aho, Hopcroft, and Ullman, The Design and Analysis of Computer Algorithms, 1974
 
 #### Master Method
 all subproblem size must have the same size
@@ -241,6 +243,104 @@ to prove P(n) is true:
 
 ---
 
+#### Lower bound for comparison based sorting
+comparison based sorting are general purpous sorting algorithms, the access elements only via comparisons
+think of it a function that takes as arguments an input array and another function which does comparisons between ADTs. All you can do is to use this API that allows you to do comparisons, you don't do anything else with elements.
+The sorting algorithm doesn't need to know anything about the internal structure of the elements—it just needs the comparison function.
+
+```
+function sort(array, compare):
+  ...
+    ...
+    compare(e1, e2)
+    ...
+    ...
+    ...
+  ...
+```
+non comparison based algorithms try to exploit properties of data itself to make it more efficient. but it leads to the loss of generality.
+examples:
+- counting sort: good when the data is integers and they are small (or within a known range)
+- bucket sort
+
+### Graphs and Minimum Cuts
+a cut of a graph (V, E) is a partition of V into non-empty sets A and B.
+the crossing edges of cut (A, B) are those edges with:
+- one endpoint in each of (A, B) [undirected graph]
+- tail in A and head in B [directed graph]
+
+roughly how many cuts does a graph with n vertices have?
+- think of the set A, it can contain any subset of the graph, B will contain the rest of nodes.
+- $\sum_{i=0}^{n}C(i, n) = 2^n$
+
+Minimum Cut Problem
+Input: an undirected graph
+Output: compute a cut with fewest number of crossing edges (a min cut)
+
+
+applications:
+- identify network weaknesses and bottlenecks
+- community detection in social media: you can think of a community as an densly connected group of vertices but which is weakly connected to others
+- image segmentation, the graph is an image (graph of pixels) with weights (higher values if two pixel values are closer)
+
+Min # of edges is n - 1
+Maximum number of edges in a graph (connected, and no parallel edges) = C(2, n) = n(n-1)/2
+imagine all nodes to be in a set, {1, 2, 3, 4, 5...}
+C(2, n) is the number of subsets of size 2 in that set. e.g. {1, 2}, {1, 3}...
+
+Sparse vs Dense graphs: important distinction, some algorithms work better on one kind of graph, some work best on the other kind.
+let n = # of vertices and m = # of edges
+In most applications (but not all) applications, m is omega(n) and O(n^2)
+
+usually people are a bit loose about this terminology
+
+in a sparse graph, m is O(n) or close to it
+in a dense graph, m is closer to O(n^2)
+
+Adjacency Matrix
+- space: O(n^2)
+- super wasteful is the graph is sparse but fine if the graph is dense
+
+Adjaceny List
+for example, each node will map to the neighboring nodes
+```python
+graph = {
+  1: [2, 3, 4]
+  2: [2, 4, 7]
+  ...
+}
+```
+- Space: O(n + m)
+but this confusing a bit...
+what if each node is connected to each other node? wouldn't that be O(n^2) too?
+that would be in case of a dense graph, it is too harsh to assume it's dense.
+Space: O(n + m) is a better approximation. even if the graph is a complete graph, it will be O(n + n(n-1)/2) = O(n^2)
+
+#### Random Contraction Algorithm (Kargar)
+contraction: the process of becoming smaller.
+
+The algorithm is so simple and elegant. kind of reminds me of Kruskal's algorithm elegance.
+but this one, it's not always correct. 
+The question now, is it correct enough so that it can be useful?
+
+
+general principle.
+we found that the algorithm's probability of success is low, it's lower bounded by 1/n^2
+I was not... so impressive. but in fact, it really a good value for such an algorithm, that, basically does nothing! it literally just picks random edges and fuses nodes.
+1/n^2 is really good. we have 2^n possible cuts, and so if we simply pick a random cut, that's around probability of 1/2^n of getting a min cut.
+so 1/n^2 is not bad.
+because now, we can actually execute the contraction algorithm repeatedly and keep track of the cut with least crossing edges. we do this to increase the change of getting a min cut.
+Let N be the number of times we execute the min cut algorithm, then with N = n^2.log(n), the probability of failure <= 1/n, which is almost magical.
+
+if we have a graph with 1000 nodes, and we reapat the randomized contraction algorithm a couple of million time, we have a change of 0.001 of failure, i.e. we'll find a min cut with a change of 99.999%
+
+
+the run time is polynomial in m and n but slow
+the algorithm is the vicinity of n^2.log(n), and in each trial you will look over all the edges, so around n^2log(n)m. which is a lot.
+but this is the simplest and most elegant but slowest implementation.
+there are better implementations that reduce the constant factors and do a lot of clever work.
+
+"compute the min cut"
 
 #### Insights
 
