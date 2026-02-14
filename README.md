@@ -242,6 +242,16 @@ if b is odd, $a^b = a \cdot (a^2)^{\lfloor b/2 \rfloor}$
 
 it's $O(log(b))$
 
+### Week 3: Quick Sort
+- As Tim describes it, it's one of the "greatest hits" in algorithms.
+
+- merge sort isn't in place… remember, you merge arrays, and to merge them you need an  temporary array (with k as its pointer)
+- quick sort works *in place*
+- IMPORTANT CONCEPT: **For-Free Primitives**
+  - there are some "For-Free Primitives" that you should keep in mind
+  >We can think of an algorithm with linear or nearlinear running time as a primitive that we can use essentially "for free," since the amount of computation used is barely more than what is required just to read the input. Sorting is a canonical example of a for-free primitive. *For example*, you can always sort your data in a preprocessing step, even if you’re not quite sure how it’s going to be helpful later.
+
+
 ### Week 4
 #### Randomized Selection (RSelect Algorithm)
 
