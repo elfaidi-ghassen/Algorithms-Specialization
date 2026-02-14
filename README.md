@@ -249,7 +249,141 @@ it's $O(log(b))$
 - quick sort works *in place*
 - IMPORTANT CONCEPT: **For-Free Primitives**
   - there are some "For-Free Primitives" that you should keep in mind
-  >We can think of an algorithm with linear or nearlinear running time as a primitive that we can use essentially "for free," since the amount of computation used is barely more than what is required just to read the input. Sorting is a canonical example of a for-free primitive. *For example*, you can always sort your data in a preprocessing step, even if you’re not quite sure how it’s going to be helpful later.
+  >We can think of an algorithm with linear or nearlinear running time as a primitive that we can use essentially "for free," since the amount of computation used is barely more than what is required just to read the input. Sorting is a canonical example of a for-free primitive. *For example*, you can always sort your data in a preprocessing step, even if you’re not quite sure how it’s going to be helpful later. [it won't hurt, sort the array, perhaps it will make your life easier at some point.]
+- Quicksort is an example of a *Randomized Algorithm*
+
+
+##### **Probability Review**
+*Sample Spaces* $\Omega$ = a set of all the possible outcomes.
+
+and $\sum_{i\in \Omega}P(i) = 1$ 
+an event is a subset in $\Omega$
+
+- Random Variables:
+  - X is a random variable, i.e. it's a function
+  - X: $\Omega \to R$
+  - e.g. sum of two dice
+  - e.g. The number of heads observed in 25 flips
+  - e.g. The number of defective light bulbs in a box of 100. the probability of a bulb being defective is 0.05
+
+
+The best way I found to think of random variables as functions 
+```
+  defective_bulbs() // 4
+  defective_bulbs() // 6
+  defective_bulbs() // 4
+  defective_bulbs() // 3
+  // or in other words:
+  X = defective_bulbs
+  X()
+  X()
+```
+whever you execute the function you'll get a random value.
+
+*Expectation*: the expected value $E[X]$ of a random variable X is the average value of X = $\sum_{i \in \Omega} P(i).X(i)$
+The output of X is the some number of defected bulbs, the input~~... is a list of bulbs, which are defected which are not, all possible permutations.~~
+is the all possibilities
+for instance X("no light bulbs are defective") = 0
+X("a single light bulb is defective") = 1
+
+
+The expected value, means go through all the possible outcomes of X and multiply it by the probability of that outcomes. in the light bulbs examples.
+
+
+In other words, if you run the `defective_bulbs` thousands of times, what is the expected value? i.e. the average.
+The expected value is something theoritical, and if you run the functions a lot of time the average should converge to it.
+
+sometimes the random variable follows a known "pattern", we call them distributions. if the function follows that pattern, i.e. verify its conditions, then you can use formulas to compute the expected value directly.
+But it's hard to do, and hence we can use the linarity of expectation
+
+what does X1 + X2 mean?
+think of it… as a new function
+```
+def X():
+	return X1() + X(2)
+```
+
+computing E(X) = $\sum_{i \in \Omega} P(i).X(i)$ is hard, and so we try to "decompose" X.
+X = X_1 + X_2 + ... + X_100
+and let X_i mean ith light bulb is defected.
+for example:
+```python
+X1() // 1
+X1() // 0
+X1() // 0
+X1() // 1
+X1() // 0
+```
+whever you run it, you get either 0 or 1
+
+So, now it's like a new function:
+```python
+def X():
+  return X1() + X2() + ... + X100()
+```
+the linearity of expectation says, the expected value of X is the same as the sum of the parts.
+E[X] = E[X1] + E[X2] + ... E[X100]
+= Sum (1 to 100) Xi
+Xi = 0.05
+and so E[X] = 100*0.05 = 5
+another way to do it, is to observe that X follows a binomial distribution with parameters (n, p) = (100, 0.05) and in a binomial distribution, the expected value is n*p = 5
+We can only use this if the "trials" are independent, i.e. the fact that one light bulb is defective doesn't not affect any other light bulbs.
+
+
+- An extremely important point is that linearity of expectation holds **even for random variables that are not independent.**
+- I mean, wow, that's cool... Sometimes you cannot use Binomial Distribution, if the variables are dependent.
+for instance:
+Consider a group of $k$ people. Assume that each person's birthday is drawn uniformly at random from the 365 possibilities. (And ignore leap years.) What is the smallest value of $k$ such that the expected number of pairs of distinct people with the same birthday is at least one?
+
+- you'd start normally with X = "number of distinct people with the same birthday"
+- but that's too complicated, so, you start to think in terms of something simpler, you "decompose" the problem.
+you say
+X = $\sum_{i=1}^{k-1}\sum_{j=i+1}^{k} Y_{ij}$ 
+- with Yij being an indicator variable
+Yij = "1 if person i and person j share the same birthday"
+- This is NOT a binomial distribution, why? because it's a rule of thumb :D, don't assume indepence unless it's clear.
+- Linearity of Expectation doesn't care.
+- $E(X) = \sum_{i=1}^{k-1}\sum_{j=i+1}^{k} E(Y_{ij})$
+
+- awesome, now, we just need to compute $E(Y_{ij})$
+
+- $E(Y_{ij}) = 0.P(Y_{ij}=0) + 1.P(Y_{ij}=1) = P(Y_{ij}=1)$
+what is the probability two people has the same birthday?
+well, $365/365^2$
+there are 365^2 possible combinations, only 365 are valid (two persons have the same birthday)
+$\sum_{i=1}^{k-1}\sum_{j=i+1}^{k}$ is pretty much the number of subsets of size 2 in a set of size k, i.e. k choose 2
+so it's $C_k^2 = k!/(2.(k-2)!) = k(k-1)/2$
+
+so we are looking for a value of k where $k(k-1)/(730)$ is greater than 1
+28 is the first value for which $k(k-1)/(730)$ is greater than 1
+
+##### Decomposition Design Recipe
+1. identify the random variable Y that you need
+2. express Y as a sum of indicator variable (aka Bernoulli, i.e. output 0 or 1) 
+3. apply the linarity of expectation and simplify the expression
+
+##### Quicksort
+- The famous QuickSort algorithm has three high-level steps:
+- first, it chooses one element p of the input array to act as a "pivot element" 
+- second, its Partition subroutine rearranges the array so that elements smaller than and greater than p come before it and after it, respectively; 
+- third, it recursively sorts the two subarrays on either side of the pivot.
+
+- ThePartition subroutine can be implemented to run in linear time and in place, meaning with negligible additional memory. As a consequence, QuickSort also runs in place.
+
+- The correctness of the QuickSort algorithm does not depend on how pivot elements are chosen, but its running time does.
+
+The worst-case scenario is a running time of $O(n^2)$, where n is the length of the input array. This occurs when the input array is already sorted and the first element is always used as the pivot element. The best-case scenario is a running time of $O(nlogn)$. This occurs when the median element is always used as the pivot
+
+- In randomized QuickSort, the pivot element is always chosen uniformly at random
+- Intuitively, choosing a random pivot is a good idea because there’s a 50% chance of getting a 25%-75% or better split of the input array
+
+> Why on earth would you want to inject randomness into your
+algorithm? Aren't algorithms just about the most deterministic thing
+you can think of? As it turns out, there are hundreds of computational
+problems for which randomized algorithms are faster, more effective,
+or easier to code than their deterministic counterparts.
+
+The proof of Quicksort's average run time is so beautiful, really makes me feel studying discrete probability was not in vain. It's a joy to see.
 
 
 ### Week 4
