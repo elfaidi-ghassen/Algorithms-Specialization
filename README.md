@@ -14,9 +14,48 @@ Some Discrete Math is essential for understand
 
 
 ## Course 1
-
+### Week 1
 > "Perhaps the most important principle for the good algorithm designer is to refuse to be content." Aho, Hopcroft, and Ullman, The Design and Analysis of Computer Algorithms, 1974
 
+- how to think about the $log$ function
+	- $log_k(n)$, how many times you divide $n$ by $k$ to get a value ≤ 1
+	- for instance, $log_2(32)$, how many times you divide 36 by 2 to get a values ≤ 1
+		- $32/2/2/2/2/2 = 1$, hence $log_2(32) = 5$
+
+- some notes about the runtime analysis of merge sort
+	- we get $nlog(n)$ because of an interesting behavior
+	- this happens because of the perfect equilibrium between two competing forces
+	- the number of sub problems is doubling each level in the tree, but the input size is halving each level.
+	- in each level $j$, we are doing:
+		- $2^j . (n/2^j) = n$ (it is independant of $j$ !)
+		- (i.e. *number of sub-problems* $\times$  sub problem size at level j)
+
+- worst case analysis seems natural, but anyway what else could we do?
+	- *average-case analysis*, under some assumption of the relative frequencies of inputs.
+	- *benchmark analysis*, we agree upfront about 10 or 20 benchmark inputs that we all consider as representative of the problem.
+	- but they require **domain knowledge**.
+
+- The importance of constant factors
+	- In some cases it is important to optimize like crazy!
+	- In some libraries they would switch from merge sort to insertion sort because if the number of elements because of the constant factors 
+- Asymptotic Analysis, it's a language in which serious programmers and computer scientists discuss the high lever performance of algorithms.
+  - you often hear serious programmers talk "this code runs in $O(n^2)$ while this code runs in $O(log(n))$"
+  - It's the famous big-oh notation.
+  - it's a "sweet spot" for high level reasoning about algorithms
+  - it's coarse enough to suppress architecture/language details, it supresses constant terms and lower order terms
+  - it's sharp enough to be useful, i.e. to make comparisons especially in large inputs
+  - "the run time of the algorithm X is O(something)"
+  - "the algorithm X runs in O(something)"
+
+- the difference between $\theta$ and $O$
+  - for instance, a searching for the maximum in array, is $\theta(n)$, since the worst and best case are the same, we will *always* go through the entire array.
+but we usually say it's O(n), we don't bother with making a stronger statement.
+we focus on the upper bound, the worst case.
+
+- Warning: it is a mistake to say $2^{(2n)}$ is $O(2^n)$ because constant factors matter in exponents.
+  - $2^{2n}$ = $(2^2)^n = 4^n$
+
+### Week 2
 #### Master Method
 all subproblem size must have the same size
 
