@@ -46,6 +46,8 @@ Some Discrete Math is essential for understand
   - it's sharp enough to be useful, i.e. to make comparisons especially in large inputs
   - "the run time of the algorithm X is O(something)"
   - "the algorithm X runs in O(something)"
+  - "The runtime complexity of the algorithm X..."
+  - "The asymptotic running time of algorith X..."
 
 - the difference between $\theta$ and $O$
   - for instance, a searching for the maximum in array, is $\theta(n)$, since the worst and best case are the same, we will *always* go through the entire array.
@@ -57,7 +59,165 @@ we focus on the upper bound, the worst case.
 
 ### Week 2
 #### Master Method
-all subproblem size must have the same size
+#### Using The Master Method:
+
+$$
+\text{If } T(n) \le a\,T\!\left(\frac{n}{b}\right) + O\!\left(n^{d}\right)
+$$
+
+$$
+\text{then}
+$$
+
+$$
+T(n) =
+\begin{cases}
+O\!\left(n^{d}\log n\right) & \text{if } a = b^{d} \quad (\text{Case 1}), \\
+O\!\left(n^{d}\right)       & \text{if } a < b^{d} \quad (\text{Case 2}), \\
+O\!\left(n^{\log_b a}\right) & \text{if } a > b^{d} \quad (\text{Case 3})
+\end{cases}
+$$
+$O(n^d)$ is the complexity we do in the "combine" step.
+$a$ is the number of recursive calls
+
+- Think of it as a black box, it's a tool, you input some parameters, and it outputs the complexity.
+- note: the master method works only if in each recursive call, it has the same input size.
+
+
+
+**Example 1:** **Binary Search**
+
+The recurrence: $T(n) \le T(\frac{n}{2}) + O(n^0)$
+$a = 1, \space b = 2, \space d = 0$
+$b^d = 2^0 = 1 = a$, hence it's the first case
+**The runtime complexity** is $O(n^0log \space n) = O(log \space n)$
+
+**Example 2:** **Merge Sort**
+
+The recurrence: $T(n) \le 2.T(\frac{n}{2}) + O(n)$
+$a = 2, \space b = 2, \space d = 1$
+$b^d = 2^1 = 2$ and $a = 2 = b^d$, hence it's the first case
+**The runtime complexity** is $O(n^1 log \space n) = O(nlog \space n)$
+
+
+**Example 3:** **Karatsuba Multiplication**
+
+before Karatsuba Multiplication, we create a simple approach, which was divide each of the number x and y into (a, b) and (c, d), respectively into two parts, and use cool math tricks to calculate the product of x . y
+for instance x = 1234, y = 6789
+a = 12, b = 34, c = 67, d = 89
+here is the formula: $x \cdot y = ac \cdot 10^{n} + (ad + bc)\cdot 10^{\frac{n}{2}} + bd$
+as you can see, we have 4 main products $ac$, $ad$, $bc$, and $bd$
+so, we will have 4 recursive calls.
+
+now, let's think about the complexity of such computation, using the master method.
+
+$T(n) \le 4.T(\frac{n}{2}) + O(n)$
+$O(n)$ because it's just a bunch of additions and padding with 0s (that $10^n$ and so on)
+$a = 4, \space b = 2, \space d = 1$
+$b^d = 2$, and $a = 4 > 2$, hence it's the third case
+
+**The runtime complexity** is $O(n^{log_2(4)}) = O(n^2)$ 
+so… it didn't work.
+the key idea now, which seems like a pattern  to me. we try to reduce the number of recursive calls.
+and that's where Karatsuba trick comes in. there is a way to find all the products $ad$, $ad$, $bc$, and $bd$ using by computing just 3 products (see the video or book for more details)
+so… let's compute the worst case complexity again.
+
+$T(n) \le 3.T(\frac{n}{2}) + O(n)$
+$a = 3, \space b = 2, \space d = 1$
+$b^d = 2$, and $a = 3 > 2$, hence it's the third case
+**The runtime complexity** is $O(n^{log_2(3)}) = O(n^{1.584})$ 
+
+side note:
+$O(n.log_2(n)) = O(n.log_{10}(n)) = O(n.log_k(n))$ it's all the same!
+because $\log_k n = \frac{\log n}{\log k}$ and $log_{10}(k)$ just a constant. so all log functions are equivalent in this case.
+
+BUT. if the log is in the exponent,then the constant matters! the bases there has essential.
+$n^{\log_2 n} \neq n^{\log_{10} n}$
+
+**Example 4:** **Strassen's Subcubic Matrix Multiplication Algorithm**
+the brute force approach for matrix multiplication is $O(n^3)$
+**could we do better?**
+we'll try a Divide and Conquer approach.
+to compute $A.B$ we can instead think of each matrix in terms  of its quadrants.
+let's say A is composed of 4 quadrants, i.e. matrices with n/2 dimension. and B is also composed of 4 other quadrants
+and using some algebra, we can compute A.B in by computing smaller products.
+there is a well know formula, we compute 8 products (between those smaller matrices) and then we can combine them (add them, so on, and place them in their appropriate plaace)  to get $A.B$
+let's see… the complexity:
+$T(n) <= 8.T(n/2) + O(n^2)$
+$a=8, \space b=2,\space d=2$
+$a = 8 > b^d = 4$, so it's third case
+**The runtime complexity** is $O(n^{log_2(8)}) = O(n^{3})$
+
+but we got $O(n^3)$ again.. we divided but it seems we got conquered.
+Yet there is hope! it's like the Karatsuba case… there must be some neat trick.
+that's what Strassen did. 
+there is a algebra trick to compute $A.B$ by with 7 recursive calls instead of 8.  
+$T(n) <= 7.T(n/2) + O(n^2)$
+$a=7, \space b=2,\space d=2$
+$a = 7 > b^d = 4$, so it's third case
+**The runtime complexity** is $O(n^{log_2(7)}) = O(n^{2.8})$
+
+
+>  I think it's an interesting pattern. First you figure out how to divide the problem into some problem, but then, you try to reduce the number of recursive calls.
+
+#### Understanding The Master Method
+- Understanding why the master method works is so useful, once I got the hang of it I was able to reverse engineer the master method easily.
+
+- how to interpret it: there is a war, there are two forces, forces of good, and forces of evil
+- $a$ (the number of recursive calls made by the algorithm) is the force of EVIL
+	- a is rate of subproblem proliferation (RSP)
+- $b^d$ is the force of good
+	- it is the rate of work shrinkage per sub problem (RWS)
+	- b = 2, i.e. the input is halphed in each sub problem
+	- but we don't care only about the shrinkage of input size, what actually matters is the rate the *work* is shrinking.
+	- so imagine b is 2 and d is 1 (like in merge sort), in each subproblem, we are doing 50% less work
+	- but imagine d is 2, i.e. we do quadratic amount of work (in the combine step, like in the case of matrices, we add them, etc.) then in each sub problem, we are doing just 25% of the work.
+		- because you were going to do O(n^2) , but in each subproblem, you'll do O((n/2)^2))
+	
+- in this battle between good and evil, there are three possible outcomes
+a tie, the forces of good win, or the forces of evil win.
+
+- recall that recursion tree.
+what we want to know, the amount of work going up per level or going down per level. or is it exactly the same?
+
+
+- If RSP < RWS, then the amount of work is decreasing with the recursion level j.
+that is. if the work shrinkage rate is higher than the rate of sub problem proliferation 
+the forces of good beat the forces of evil.
+*that means after each tree level, we'll be doing less work*
+
+
+- If RSP > RWS, then the amount of work is increasing with the recursion level j. the forces of evil win.
+- the rating of new subproblems is so high that the savings aren't enough.
+*that means after each tree level, we'll be doing more work* (even though we are trying to reducing the work, but it's not enough)
+
+
+- If RSP = RWS, then the amount of work is the same in each recursion level j.
+a tie.
+- our savings cancel with the rate of new sub problems. 
+
+
+- So, the take away:
+  - if RSP = RWS => same amount of work each level (like merge sort)
+so you should expect $O(n^d . log(n))$ i.e. the amount of work at the root ($n^d$) times the number of levels.
+
+  - if RSP < RWS => less work each level 
+so, most work is at the root (you might expect $O(n^d)$, and your expectation is correct)
+the total amount of work in the entire tree is just a constant factor larger than the amount of work at the root level. 
+
+
+  - if RSP > RWS => more work each level, the recursive calls are outpacing the savings then the most work will be at the leaves and since we have constant amount of work in the leaves (base cases) might expect a running time of O(#number of leaves) which is $O(a^{log_b{n}})$ which is equivalent to $O(n^{log_b{a}})$ which don't we say $O(a^{log_b{n}})$ in the master method since it is more intuitive? because it is easier to apply. remember the karatsuba example. $O(n^{log_2(3)}) = O(n^{1.584})$  that's much easier to think about compared to $3^{log(n)}$ even though it is actually the same
+
+
+- and, we PROVED this intuition. it's actually correct :D
+- the idea is not that hard: would start with the recursion tree, then we count up the work done by the algorithm, going level by level. then we realize there are three kinds of recursion trees. some where the work increases per level, decreses, or stays the same.
+
+- Note: "work increases per level" = the amount of work in the entire level, not just one call
+
+
+- the proof is so beautiful, it almost makes me cry
+- At that moment I felt yeah, Tim is a great teacher
+
 
 
 ### Week 4
