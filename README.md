@@ -218,7 +218,29 @@ the total amount of work in the entire tree is just a constant factor larger tha
 - the proof is so beautiful, it almost makes me cry
 - At that moment I felt yeah, Tim is a great teacher
 
+- NOTE: an error I keep doing, I say "the runtime complexity of this problem is $n^2$". Instead I should say
+"the runtime complexity of this problem is $O(n^2)$"
 
+
+#### Aside: Fast Power
+```
+FastPower(a,b) :
+  if b = 1
+    return a
+  else
+    c := a*a
+    ans := FastPower(c,[b/2])
+  if b is odd
+    return a*ans
+  else return ans
+end
+```
+I didn't know about this algorithm! cool!
+it uses the fact that
+if b is even, $a^b = (a^{2})^{\frac{b}{2}}$
+if b is odd, $a^b = a \cdot (a^2)^{\lfloor b/2 \rfloor}$
+
+it's $O(log(b))$
 
 ### Week 4
 #### Randomized Selection (RSelect Algorithm)
