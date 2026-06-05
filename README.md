@@ -4,12 +4,12 @@
 
 ## Prerequites
 
-Some Discrete Math is essential for understand
+Some Discrete Math is essential for understanding
 
 - Writing proof by contradiction and by induction
 - Basics of Counting Discrete Probability:
   - Random Variables, Expectation, Independence
-  - Linearity of Expectation is one of the most important topics
+  - Linearity of Expectation is one of the most important topics (it's explained beautifully in the course)
   - Pigeonhole principle basics
   - Conditional Probability basics
 
